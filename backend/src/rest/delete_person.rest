@@ -1,2 +1,0 @@
-DELETE https://fullstackopen-phonebook-un30.onrender.com/api/persons/3768
-content-type: application/json
