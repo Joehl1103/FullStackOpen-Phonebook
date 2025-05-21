@@ -110,6 +110,30 @@ app.delete('/api/persons/:id',(request,response) => {
     }
 })
 
+app.put('/api/persons/:id',(request,response)=> {
+    const id = request.params.id
+    const body = request.body
+    const newPhoneNumber = body.number
+    const personFound = persons.find(p => p.id === id)
+    if (!personFound){
+        response.status(404).send("Person not found")
+    }
+    personFound.number = body.number
+    persons.forEach(p => {
+        if(p.id === id){
+            p = personFound
+            response.status(200).send("Person's number updated")
+        }
+        response.status(404).send("Person not found. Something happened")
+
+    })
+
+
+
+
+    // figure out the update method
+})
+
 // POST REQUEST MIDDLEWARE
 
 // executes if no existing route is called
