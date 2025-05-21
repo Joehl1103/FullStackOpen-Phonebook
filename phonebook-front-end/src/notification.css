@@ -1,0 +1,32 @@
+.added {
+    color:darkgreen;
+    background: lightgreen;
+    font-size:20px;
+    border-style:solid;
+    border-radius:5px;
+    padding: 10px;
+    margin-bottom: 10px;
+    display:inline;
+}
+
+.modified {
+    color:rgb(138, 76, 0);
+    background: lightsalmon;
+    font-size:20px;
+    border-style:solid;
+    border-radius:5px;
+    padding: 10px;
+    margin-bottom: 10px;
+    display:inline;
+}
+
+.deleted, .error {
+    color:darkred;
+    background: rgb(255, 161, 161);
+    font-size:20px;
+    border-style:solid;
+    border-radius:5px;
+    padding: 10px;
+    margin-bottom: 10px;
+    display:inline;
+}
