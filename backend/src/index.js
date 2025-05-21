@@ -12,6 +12,7 @@ app.use(morgan(':method :url :status :res[content-length] -:response-time ms :us
 
 
 app.use(express.json())
+app.use(express.static('dist'))
 
 // DATA
 const personData = require('./db.json')
