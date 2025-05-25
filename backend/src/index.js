@@ -1,6 +1,6 @@
 require('dotenv').config()
 const mongoose = require('mongoose')
-const Note = require('../models/person')
+const Person = require('../models/person')
 const express = require('express')
 const cors = require('cors')
 const app = express()
@@ -31,29 +31,25 @@ app.get('/',(request,response) => {
 })
 
 app.get('/api/persons',(request,response) => {
-    Note.find({})
+    Person.find({})
         .then(persons => {
             response.send(persons)
         })
 
 })
 
-function returnNPersons(){
-    Note.find({})
+app.get('/info',(request,response) => {
+    const nPerson =  returnNPersons
+    Person.find({})
         .then(persons => {
-            return [...persons.map(n => n.id)].length
+            return [...persons.map(n => n._id)].length
 
         })
-}
-
-const nPersons = returnNPersons()
-
-
-app.get('/info',(request,response) => {
-    response.send(`<p>Phonebook as info for ${nPersons} persons</p><br>${todayInfo}`)
+        .then(nPersons => {
+            response.send(`<p>Phonebook as info for ${nPersons} persons</p><br>${todayInfo}`)
+        })
+    
 })
-
-
 
 app.get('/api/persons/:id',(request,response)=> {
     // console.log(request)
@@ -66,25 +62,25 @@ app.get('/api/persons/:id',(request,response)=> {
     }
 })
 
-function generateId(){
-    const max = 10000
-    const min = 5
-    const newId = Math.floor(Math.random() * (max-min) + min)
-    return newId 
-}
+// function generateId(){
+//     const max = 10000
+//     const min = 5
+//     const newId = Math.floor(Math.random() * (max-min) + min)
+//     return newId 
+// }
 
-function generateRandomNumber(min,max){
-    return 
-}
+// function generateRandomNumber(min,max){
+//     return 
+// }
 
-function createNewPerson(newName,newNumber){
-    const newPerson = {
-        id: `${generateId()}`,
-        name: newName,
-        number: newNumber,
-    }
-    return newPerson
-}
+// function createNewPerson(newName,newNumber){
+//     const newPerson = {
+//         id: `${generateId()}`,
+//         name: newName,
+//         number: newNumber,
+//     }
+//     return newPerson
+// }
 
 function searchForExisting(name){
     const existingNameArray = [...persons.map(n => n.name)]
@@ -103,13 +99,18 @@ app.post('/api/persons',(request,response) => {
     if (name === '' || number === ''){
         response.status(400).send("name or number missing")
     }
-    const nameAlreadyExists = searchForExisting(body.name)
-    if (nameAlreadyExists){
-        response.status(400).send("name already exists")
-    }
-    const newPerson = createNewPerson(name,number)
-    persons = persons.concat(newPerson)
-    response.status(201).end()
+    // const nameAlreadyExists = searchForExisting(body.name)
+    // if (nameAlreadyExists){
+    //     response.status(400).send("name already exists")
+    // }
+    const newPerson = new Person({
+        name: body.name,
+        number: body.number
+    })
+
+    newPerson.save().then(savedPerson => {
+        response.json(savedPerson)
+    })
 
 })
 
