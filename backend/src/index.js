@@ -1,3 +1,6 @@
+require('dotenv').config()
+const mongoose = require('mongoose')
+const Note = require('../models/person')
 const express = require('express')
 const cors = require('cors')
 const app = express()
@@ -15,11 +18,10 @@ app.use(express.json())
 app.use(express.static('dist'))
 
 // DATA
-const personData = require('./db.json')
-let persons = [...personData]
+// const personData = require('./db.json')
+// let persons = [...personData]
 
 // HELPER METHODS
-const nPersons = [...persons.map(n => n.id)].length
 const todayInfo = new Date(Date.now())
 
 // HTTP METHODS
@@ -28,13 +30,30 @@ app.get('/',(request,response) => {
     response.send("<h1>Hello guys</h1><br/><p>What is uuuuuuuuuuup?!")
 })
 
+app.get('/api/persons',(request,response) => {
+    Note.find({})
+        .then(persons => {
+            response.send(persons)
+        })
+
+})
+
+function returnNPersons(){
+    Note.find({})
+        .then(persons => {
+            return [...persons.map(n => n.id)].length
+
+        })
+}
+
+const nPersons = returnNPersons()
+
+
 app.get('/info',(request,response) => {
     response.send(`<p>Phonebook as info for ${nPersons} persons</p><br>${todayInfo}`)
 })
 
-app.get('/api/persons',(request,response) => {
-    response.send(persons)
-})
+
 
 app.get('/api/persons/:id',(request,response)=> {
     // console.log(request)
@@ -143,7 +162,7 @@ const unknownEndpoint = (request,response) => {
 app.use(unknownEndpoint)
 
 // Set up Port
-const PORT = 3001
+const PORT = process.env.PORT
 app.listen(PORT,() => {
     console.log(`Server running on port ${PORT}`)
 })
