@@ -18,6 +18,9 @@ function App() {
   personService
     .getAll()
     .then(displayedPersons => setPersons(displayedPersons))
+    .catch(error => {
+      console.error(error.message)
+    })
   
  }
 
@@ -28,9 +31,30 @@ function App() {
   // prevent default form behavior: re-rendering the page
   event.preventDefault()
 
-  const newNameExists = checkForExistingName(newName)
     // console.log("Does newName exist? ",newNameExists)
-    if (newNameExists){
+  const newNameExists = checkForExistingName(newName)
+
+  if(newNameExists){
+    updatePerson(newName)
+  }
+
+    // create the new object using newName, set by the onChange event handler
+  const newPerson = {name: newName,number: newPhone}
+
+  personService
+    .create(newPerson)
+    .then(hook)
+    .then(() => {
+        setNotificationType("added")
+        setNotification(`Added ${newPerson.name}`)
+        timeout()
+        })
+        // catches the general axio error object and passes it to the error handling function
+    .catch(error => errorMessage(error))
+}
+
+function updatePerson(newName){
+
       if(window.confirm(`${newName} already exists in the phonebook. Replace the old number with the new one?`)){
         const personToBeUpdatedArray = persons.filter(person => person.name.toLowerCase() === newName.toLowerCase())
         const personToBeUpdateId = personToBeUpdatedArray[0].id
@@ -43,23 +67,12 @@ function App() {
             setNotification(`Modified ${personToBeUpdatedArray[0].name}`)
             timeout()
           })
-          .catch(error => errorMessage(error))
+          .catch(error => {
+            errorMessage(error)
+        })
 
       }
       return
-    }
-    // create the new object using newName, set by the onChange event handler
-    const newPerson = {name: newName,number: newPhone}
-
-    personService
-      .create(newPerson)
-      .then(hook)
-      .then(() => {
-          setNotificationType("added")
-          setNotification(`Added ${newPerson.name}`)
-          timeout()
-          })
-      .catch(error => errorMessage(error))
     }
 
 function checkForExistingName(newName){
@@ -97,9 +110,20 @@ function timeout(){
 }
 
 function errorMessage(error){
+  // console.log("Error caught on the front end",error)
+  // receives the general axios error object
   setNotificationType("error")
-  setNotification(`${error.message}`)
-  timeout()
+  // checks whether or not the response object of the error object contains 
+  // the specific error object returned by the server
+  if (error.response.data.error.includes('Person validation failed')){
+    const validationErrorMessage = error.response.data.error
+    setNotification(`${validationErrorMessage}`)
+    timeout()
+  } else {
+    setNotification(`${error.message}`)
+    timeout()
+  }
+  
 }
 
 

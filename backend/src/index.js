@@ -1,5 +1,4 @@
 require('dotenv').config()
-const mongoose = require('mongoose')
 const Person = require('../models/person')
 const express = require('express')
 const cors = require('cors')
@@ -38,15 +37,15 @@ app.get('/api/persons',(request,response,next) => {
 
 })
 
-app.get('/info',(request,response) => {
-    const nPerson =  returnNPersons
+app.get('/info',(request,response,next) => {
+    console.log("fetching general info")
     Person.find({})
         .then(persons => {
             return [...persons.map(n => n._id)].length
 
         })
         .then(nPersons => {
-            response.send(`<p>Phonebook as info for ${nPersons} persons</p><br>${todayInfo}`)
+            response.send(`<p>Phonebook has info for ${nPersons} persons</p><br>${todayInfo}`)
         })
         .catch(error => next(error))
 })
@@ -66,10 +65,10 @@ app.get('/api/persons/:id',(request,response)=> {
     
 })
 
-app.post('/api/persons',(request,response) => {
-    console.log(request.params)
+app.post('/api/persons',(request,response,next) => {
+    console.log("Post request parameters",request.params)
     const body = request.body
-    console.log("body",body)
+    console.log("Post body",body)
     const name = body.name
     const number = body.number
     if (name === '' || number === ''){
@@ -83,6 +82,7 @@ app.post('/api/persons',(request,response) => {
     newPerson.save().then(savedPerson => {
         response.json(savedPerson)
     })
+    // catches the error and passes it to the error handling middleware
     .catch(error => next(error))
 
 })
@@ -129,7 +129,16 @@ app.put('/api/persons/:id',(request,response)=> {
 // executes if no existing route is called
 
 const errorHandler = (error,request,response,next)=>{
-    return response.status(400).send({error: error.message})
+    console.log(`error message:`,error.message)
+    if (error.message.includes('Person validation failed')){
+        console.log("Validation error")
+        console.log("HTTP status response",response.status(400))
+        console.log(`Error message ${error.message}`)
+        // returns a bad request status as well as a jsonified version of the error as a response object 
+        // within the bad request object
+        return response.status(400).json({error: error.message})
+    }
+    next(error)
 }
 
 app.use(errorHandler)

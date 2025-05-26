@@ -15,9 +15,23 @@ mongoose.connect(url)
 
 // set the schema for the person object
 const personSchema = new mongoose.Schema({
-    name: String,
-    number: String
-})
+    name: {
+        type:String,
+        minLength: [3,'Name must be at least 3 characters long'],
+        required: [true,'Person must have a name']
+    },
+    number: {
+        type: String,
+        validate: {
+            validator: function(v) {
+                return /\(\d{3}\)\s\d{3}-\d{4}/.test(v)
+            },
+            // sets the error message 
+            message: props => `${props.value} must be in the following format: (000) 000-0000`
+        },
+        required: true
+    }
+    })
 
 // configure the setter such that id is a string
 mongoose.set('toJSON', {// something is here; what is the set acting on?

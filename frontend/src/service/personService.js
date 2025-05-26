@@ -7,8 +7,12 @@ const getAll = () => {
 }
 
 const create = (newPerson) => {
-    const request = axios.post(baseUrl,newPerson)
-    return request.then(response => response.data)
+    try{
+        const request = axios.post(baseUrl,newPerson)
+        return request.then(response => response.data)
+    } catch (error){
+        console.log(`Error occurred while sending axio post request ${error.message}`)
+    }
 }
 
 const deletePerson = (id) => {
