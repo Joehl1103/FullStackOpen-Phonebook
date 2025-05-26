@@ -22,7 +22,7 @@ const todayInfo = new Date(Date.now())
 // HTTP METHODS
 
 app.get('/',(request,response) => {
-    response.send("<h1>Hello guys</h1><br/><p>What is uuuuuuuuuuup?!")
+    response.send('<h1>Hello guys</h1><br/><p>What is uuuuuuuuuuup?!')
 })
 
 app.get('/api/persons',(request,response,next) => {
@@ -31,14 +31,14 @@ app.get('/api/persons',(request,response,next) => {
             console.log(persons)
             response.send(persons)
         })
-        .catch(error =>{
+        .catch(error => {
             next(error)
         })
 
 })
 
 app.get('/info',(request,response,next) => {
-    console.log("fetching general info")
+    console.log('fetching general info')
     Person.find({})
         .then(persons => {
             return [...persons.map(n => n._id)].length
@@ -50,7 +50,7 @@ app.get('/info',(request,response,next) => {
         .catch(error => next(error))
 })
 
-app.get('/api/persons/:id',(request,response)=> {
+app.get('/api/persons/:id',(request,response,next) => {
     // console.log(request)
     const id = request.params.id
     Person.findById(id)
@@ -58,41 +58,41 @@ app.get('/api/persons/:id',(request,response)=> {
             if (person){
                 response.json(person)
             } else {
-                response.status(404).send("Person does not exist.")
+                response.status(404).send('Person does not exist.')
             }
         })
         .catch(error => next(error))
-    
 })
 
 app.post('/api/persons',(request,response,next) => {
-    console.log("Post request parameters",request.params)
+    console.log('Post request parameters',request.params)
     const body = request.body
-    console.log("Post body",body)
+    console.log('Post body',body)
     const name = body.name
     const number = body.number
     if (name === '' || number === ''){
-        response.status(400).send("name or number missing")
+        response.status(400).send('name or number missing')
     }
     const newPerson = new Person({
         name: body.name,
         number: body.number
     })
 
-    newPerson.save().then(savedPerson => {
-        response.json(savedPerson)
-    })
+    newPerson.save()
+        .then(savedPerson => {
+            response.json(savedPerson)
+        })
     // catches the error and passes it to the error handling middleware
-    .catch(error => next(error))
+        .catch(error => next(error))
 
 })
 
-app.delete('/api/persons/:id',(request,response) => {
-    console.log("attempting to delete person")
+app.delete('/api/persons/:id',(request,response,next) => {
+    console.log('attempting to delete person')
     const id = request.params.id
     Person.findByIdAndDelete(id)
         .then(result => {
-            console.log("delete response",result)
+            console.log('delete response',result)
             if(response){
                 response.status(204).end()
             } else {
@@ -100,17 +100,16 @@ app.delete('/api/persons/:id',(request,response) => {
             }
         })
         .catch(error => next(error))
-    })
+})
 
-app.put('/api/persons/:id',(request,response)=> {
+app.put('/api/persons/:id',(request,response,next) => {
     console.log(request.params)
     const id = request.params.id
     const body = request.body
-    const newPhoneNumber = body.number
     Person.findById(id)
         .then(person => {
             if (!person){
-                response.status(404).send("Person not found")
+                response.status(404).send('Person not found')
             }
             person.name = body.name
             person.number = body.number
@@ -121,22 +120,21 @@ app.put('/api/persons/:id',(request,response)=> {
 
         })
         .catch(error => next(error))
-    
-    })
+})
 
 // POST REQUEST MIDDLEWARE
 
 // executes if no existing route is called
 
-const errorHandler = (error,request,response,next)=>{
-    console.log(`error message:`,error.message)
+const errorHandler = (error,request,response,next) => {
+    console.log('error message:',error.message)
     if (error.message.includes('Person validation failed')){
-        console.log("Validation error")
-        console.log("HTTP status response",response.status(400))
+        console.log('Validation error')
+        console.log('HTTP status response',response.status(400))
         console.log(`Error message ${error.message}`)
-        // returns a bad request status as well as a jsonified version of the error as a response object 
+        // returns a bad request status as well as a jsonified version of the error as a response object
         // within the bad request object
-        return response.status(400).json({error: error.message})
+        return response.status(400).json({ error: error.message })
     }
     next(error)
 }
