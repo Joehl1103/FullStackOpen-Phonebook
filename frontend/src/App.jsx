@@ -71,6 +71,11 @@ function deletePerson(id,personToBeDeleted){
   if(window.confirm(`Are you sure you want to delete ${personToBeDeleted.name}?`)){
     personService
     .deletePerson(id,personToBeDeleted)
+    .then(() => {
+      setNotificationType('deleted')
+      setNotification(`Deleted ${personToBeDeleted.name}`)
+      timeout()
+    }) // hits the API endpoint and deletes the person on the server
     .then(hook)
     .then(() => {
       setNotificationType("deleted")

@@ -1,5 +1,5 @@
 const PersonDisplay = (props) => {
-    // console.log("Person Display Props: ",props)
+    console.log("Person Display Props: ",props)
     const st = props.searchTerm
     const personsArray = props.persons
     const personsArrayLowerCase = personsArray.map(
@@ -31,7 +31,7 @@ const PersonDisplay = (props) => {
         <div>
             {personsArray.map(person => {
                 return <li 
-                key={person.id}>Name: {person.name}, Phone Number: {person.number} 
+                key={person.id}>Name: {person.name}, Phone Number: {person.number}&nbsp; 
                 <button 
                     type='button' 
                     onClick={() => props.deletePerson(person.id,person)}>Delete</button>

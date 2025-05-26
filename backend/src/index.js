@@ -116,19 +116,20 @@ app.post('/api/persons',(request,response) => {
 
 app.delete('/api/persons/:id',(request,response) => {
     console.log("attempting to delete person")
-    try {  
     const id = request.params.id
-    let personFound = persons.find(p => p.id === id)
-    if(personFound){
-        persons = persons.filter(p => p.id !== id)
-        response.status(204).end()
-    } else {
-        response.send("Person not found")
-    }
-    } catch (error){
-        console.error(error.message)
-    }
-})
+    Person.findByIdAndDelete(id)
+        .then(result => {
+            console.log("delete response",result)
+            if(response){
+                response.status(204).end()
+            } else {
+                response.status(404).end()
+            }
+        })
+        .catch(error => {
+            console.error(error.message)
+        })
+    })
 
 app.put('/api/persons/:id',(request,response)=> {
     const id = request.params.id
