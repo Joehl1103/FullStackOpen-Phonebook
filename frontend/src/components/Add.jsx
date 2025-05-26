@@ -20,7 +20,7 @@ return (
             <label>Phone number: </label>
             <input
                 type="tel"
-                pattern="\(\d{3}\)\s\d{3}-\d{4}"
+                // pattern="\(\d{3}\)\s\d{3}-\d{4}" disables on 5/16 in order to implement on the back-end
                 value={props.newPhone}
             onChange={e => props.setNewPhone(e.target.value)}
             placeholder="(000) 000-0000"
